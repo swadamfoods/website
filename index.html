@@ -184,7 +184,7 @@
         /* --- STORE --- */
         .store-header { text-align: center; max-width: 700px; margin: 0 auto 3rem; }
         .store-header h2 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 1rem; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2.5rem; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; }
 
         .glass-product-card {
             background: var(--surface); backdrop-filter: blur(25px); border: 1px solid var(--border);
@@ -204,10 +204,10 @@
         .card-content h3 { font-size: 1.4rem; }
         .card-content p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
         
-        .weight-selector { display: flex; gap: 0.5rem; }
+        .weight-selector { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
         .weight-pill {
             background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-muted);
-            padding: 6px 14px; border-radius: 30px; font-size: 0.8rem; cursor: pointer; transition: var(--transition); font-weight: 600;
+            padding: 6px 12px; border-radius: 30px; font-size: 0.75rem; cursor: pointer; transition: var(--transition); font-weight: 600;
         }
         .weight-pill.active { background: var(--text); color: var(--bg); border-color: var(--text); }
 
@@ -271,25 +271,28 @@
         .footer-links a { text-decoration: none; color: var(--text-muted); font-size: 0.85rem; transition: var(--transition); cursor: pointer;}
         .footer-links a:hover { color: var(--accent); }
 
-        /* --- iOS CART DRAWER --- */
+        /* --- iOS CART DRAWER (FIXED ANIMATION) --- */
         .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 2000; opacity: 0; pointer-events: none; transition: var(--transition); }
         .cart-overlay.open { opacity: 1; pointer-events: all; }
         .cart-drawer {
-            position: fixed; top: 0; right: -100%; width: 100%; max-width: 400px; height: 100vh;
+            position: fixed; top: 0; right: 0; width: 100%; max-width: 400px; height: 100vh;
             background: rgba(15, 10, 8, 0.85); backdrop-filter: blur(40px); border-left: 1px solid var(--border);
             z-index: 2001; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; padding: 2rem;
+            transform: translateX(100%); /* Hides it completely to the right edge */
         }
-        [data-theme="light"] .cart-drawer { background: rgba(255, 252, 249, 0.9); }
-        .cart-drawer.open { transform: translateX(-100%); }
+        [data-theme="light"] .cart-drawer { background: rgba(255, 252, 249, 0.95); }
+        .cart-drawer.open { transform: translateX(0); /* Slides it perfectly into view */ }
+        
         .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
-        .cart-items-wrapper { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+        .cart-items-wrapper { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; padding-right: 5px; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; background: var(--surface); padding: 1rem; border-radius: 16px; border: 1px solid var(--border); }
         .qty-controls { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 20px; }
         .cart-footer-panel { border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 1rem; display: flex; flex-direction: column; gap: 1.5rem; }
         .btn-whatsapp-checkout {
             background: #25D366; color: white; border: none; padding: 15px; border-radius: 30px;
-            font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); transition: var(--transition);
         }
+        .btn-whatsapp-checkout:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(37, 211, 102, 0.5); }
 
         /* --- TOAST NOTIFICATION --- */
         .toast-container { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); z-index: 3000; transition: var(--transition); }
@@ -355,14 +358,16 @@
         </div>
     </div>
 
-    <!-- Sliding Cart -->
+    <!-- Sliding Cart Drawer -->
     <div class="cart-overlay" id="cart-overlay" onclick="toggleCart(false)"></div>
     <div class="cart-drawer" id="cart-drawer">
         <div class="cart-header">
             <h2>Your Bag</h2>
             <button class="icon-btn" onclick="toggleCart(false)"><i class="fas fa-times"></i></button>
         </div>
-        <div class="cart-items-wrapper" id="cart-items"></div>
+        <div class="cart-items-wrapper" id="cart-items">
+            <!-- Items injected by JS -->
+        </div>
         <div class="cart-footer-panel">
             <div class="cart-total-row"><span>Total:</span><span id="cart-total">₹0</span></div>
             <button class="btn-whatsapp-checkout" onclick="checkoutWhatsApp()">
@@ -374,7 +379,6 @@
     <!-- Desktop Top Navigation -->
     <nav>
         <div class="logo-container" onclick="showView('home')">
-            <!-- REPLACED SOURCE WITH LOCAL LOGO NAME -->
             <img src="swadam-logo.png" alt="Swadam Foods Logo">
             <span class="logo-text">Swadam</span>
         </div>
@@ -416,7 +420,6 @@
             </div>
             <div class="hero-showcase">
                 <div class="glass-hero-card">
-                    <!-- REPLACED SOURCE WITH LOCAL LOGO NAME -->
                     <img src="swadam-logo.png" alt="Swadam Foods Logo Elements">
                 </div>
             </div>
@@ -436,7 +439,7 @@
             <div class="glass-product-card" id="card-prod-1" onclick="openProductProfile('prod-1')">
                 <div class="card-visual">
                     <span class="spice-tag" style="background: rgba(212, 175, 55, 0.3);">Haldi Blend</span>
-                    <img src="https://images.unsplash.com/photo-1601050641296-611182e94763?auto=format&fit=crop&w=800&q=80" alt="Salted Shankarpali">
+                    <img src="salted.jpg" alt="Salted Shankarpali">
                 </div>
                 <div class="card-content">
                     <span style="font-size:0.75rem; color:var(--gold); font-weight:700; text-transform:uppercase;">Classic Diamond Cut</span>
@@ -444,12 +447,13 @@
                     <p>Delicate, multilayered, and exquisitely flaky dough crispies prepared with pure ghee and sea salt.</p>
                     
                     <div class="weight-selector">
-                        <button class="weight-pill active" onclick="selectWeight(event, 'prod-1', '250g', 150)">250g</button>
-                        <button class="weight-pill" onclick="selectWeight(event, 'prod-1', '500g', 280)">500g</button>
+                        <button class="weight-pill active" data-size="Pocket pack(100gm)" onclick="selectWeight(event, 'prod-1', 'Pocket pack(100gm)', 65)">Pocket pack(100gm)</button>
+                        <button class="weight-pill" data-size="Regular pack(200gm)" onclick="selectWeight(event, 'prod-1', 'Regular pack(200gm)', 120)">Regular pack(200gm)</button>
+                        <button class="weight-pill" data-size="Large Pack(400gm)" onclick="selectWeight(event, 'prod-1', 'Large Pack(400gm)', 230)">Large Pack(400gm)</button>
                     </div>
 
                     <div class="card-footer">
-                        <span class="price-tag" id="price-prod-1">₹150</span>
+                        <span class="price-tag" id="price-prod-1">₹65</span>
                         <button class="btn-add" onclick="event.stopPropagation(); triggerAdd('prod-1', 'Salted Shankarpali')"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
@@ -459,7 +463,7 @@
             <div class="glass-product-card" id="card-prod-2" onclick="openProductProfile('prod-2')">
                 <div class="card-visual">
                     <span class="spice-tag" style="background: rgba(226, 114, 91, 0.3);">Zesty Saffron</span>
-                    <img src="https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&w=800&q=80" alt="Tangy Shankarpali">
+                    <img src="tangy.jpg" alt="Tangy Shankarpali">
                 </div>
                 <div class="card-content">
                     <span style="font-size:0.75rem; color:var(--accent); font-weight:700; text-transform:uppercase;">Secret Masala</span>
@@ -467,12 +471,13 @@
                     <p>Our traditional crispies dusted with a signature hot-and-sour spice blend for an authentic flavor burst.</p>
                     
                     <div class="weight-selector">
-                        <button class="weight-pill active" onclick="selectWeight(event, 'prod-2', '250g', 165)">250g</button>
-                        <button class="weight-pill" onclick="selectWeight(event, 'prod-2', '500g', 310)">500g</button>
+                        <button class="weight-pill active" data-size="Pocket pack(100gm)" onclick="selectWeight(event, 'prod-2', 'Pocket pack(100gm)', 70)">Pocket pack(100gm)</button>
+                        <button class="weight-pill" data-size="Regular pack(200gm)" onclick="selectWeight(event, 'prod-2', 'Regular pack(200gm)', 130)">Regular pack(200gm)</button>
+                        <button class="weight-pill" data-size="Large Pack(400gm)" onclick="selectWeight(event, 'prod-2', 'Large Pack(400gm)', 250)">Large Pack(400gm)</button>
                     </div>
 
                     <div class="card-footer">
-                        <span class="price-tag" id="price-prod-2">₹165</span>
+                        <span class="price-tag" id="price-prod-2">₹70</span>
                         <button class="btn-add" onclick="event.stopPropagation(); triggerAdd('prod-2', 'Tangy Shankarpali')"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
@@ -482,7 +487,7 @@
             <div class="glass-product-card" id="card-prod-3" onclick="openProductProfile('prod-3')">
                 <div class="card-visual">
                     <span class="spice-tag" style="background: rgba(143, 168, 130, 0.3);">Cardamom & Curry</span>
-                    <img src="https://images.unsplash.com/photo-1589119634735-12cb0d210995?auto=format&fit=crop&w=800&q=80" alt="Special Chivda">
+                    <img src="chivda.jpg" alt="Special Chivda">
                 </div>
                 <div class="card-content">
                     <span style="font-size:0.75rem; color:var(--green); font-weight:700; text-transform:uppercase;">Golden Roast</span>
@@ -490,12 +495,13 @@
                     <p>Light crispy flaked rice mixed with whole cashew nuts, roasted peanuts, green chillies, and curry leaves.</p>
                     
                     <div class="weight-selector">
-                        <button class="weight-pill active" onclick="selectWeight(event, 'prod-3', '250g', 180)">250g</button>
-                        <button class="weight-pill" onclick="selectWeight(event, 'prod-3', '500g', 340)">500g</button>
+                        <button class="weight-pill active" data-size="Pocket pack(100gm)" onclick="selectWeight(event, 'prod-3', 'Pocket pack(100gm)', 80)">Pocket pack(100gm)</button>
+                        <button class="weight-pill" data-size="Regular pack(200gm)" onclick="selectWeight(event, 'prod-3', 'Regular pack(200gm)', 150)">Regular pack(200gm)</button>
+                        <button class="weight-pill" data-size="Large Pack(400gm)" onclick="selectWeight(event, 'prod-3', 'Large Pack(400gm)', 280)">Large Pack(400gm)</button>
                     </div>
 
                     <div class="card-footer">
-                        <span class="price-tag" id="price-prod-3">₹180</span>
+                        <span class="price-tag" id="price-prod-3">₹80</span>
                         <button class="btn-add" onclick="event.stopPropagation(); triggerAdd('prod-3', 'Special Chivda')"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
@@ -514,13 +520,13 @@
     <main id="heritage" class="view">
         <div class="profile-container">
             <div class="gallery-main">
-                <img src="https://images.unsplash.com/photo-1596797038530-2c395c01f1e1?auto=format&fit=crop&w=1200&q=80" alt="Cooking Heritage">
+                <img src="heritage.jpg" alt="Cooking Heritage">
             </div>
             <div class="profile-details">
                 <span class="tagline">The Philosophy</span>
                 <h2>One Woman. Countless Memories.</h2>
-                <p>Swadam Foods is a tribute to the warmth of family tables. Handcrafted in-house by our founder, this initiative was born to revive snack preparation methods that are disappearing in the age of commercialized mass manufacturing.</p>
-                <p>By grinding our own spices and strictly manufacturing only what we can carefully monitor, we ensure that every single package delivers on our motto: *The Taste of Purity and Care*.</p>
+                <p>Swadam Foods is a tribute to the warmth of family tables. Handcrafted in-house by our founder, <strong>Vidya Dandekar</strong>, this initiative was born to revive snack preparation methods that are disappearing in the age of commercialized mass manufacturing.</p>
+                <p>By grinding our own spices and strictly manufacturing only what we can carefully monitor, we ensure that every single package delivers on our motto: <em>The Taste of Purity and Care</em>.</p>
             </div>
         </div>
     </main>
@@ -543,32 +549,43 @@
             <div class="footer-links">
                 <h4>Connect</h4>
                 <ul>
-                    <li><a href="#">WhatsApp Support</a></li>
-                    <li><a href="#">Instagram DM</a></li>
-                    <li>Mumbai, India</li>
+                    <li><a href="https://wa.me/919356614958" target="_blank"><i class="fab fa-whatsapp"></i> +91 93566 14958</a></li>
+                    <li><a href="mailto:swadamfoodsindia@gmail.com"><i class="fas fa-envelope"></i> swadamfoodsindia@gmail.com</a></li>
+                    <li><a href="#"><i class="fab fa-instagram"></i> Instagram DM</a></li>
+                    <li><i class="fas fa-map-marker-alt"></i> Mumbai, India</li>
                 </ul>
             </div>
         </div>
         <div style="border-top: 1px solid var(--border); padding-top: 2rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
-            &copy; 2026 Swadam Foods. Crafted with Tradition in India.
+            &copy; 2026 Swadam Foods by Vidya Dandekar. Crafted with Tradition in India.
         </div>
     </footer>
 
     <script>
-        // State Management
+        // State Management - Perfectly Synced Exact Weights
         const productStates = {
-            'prod-1': { weight: '250g', price: 150 },
-            'prod-2': { weight: '250g', price: 165 },
-            'prod-3': { weight: '250g', price: 180 }
+            'prod-1': { weight: 'Pocket pack(100gm)', price: 65 },
+            'prod-2': { weight: 'Pocket pack(100gm)', price: 70 },
+            'prod-3': { weight: 'Pocket pack(100gm)', price: 80 }
         };
 
         const productDetails = {
-            'prod-1': { id: 'prod-1', category: 'Classic Savory', title: 'Salted Shankarpali', tagline: 'The perfect golden melt-in-mouth tea companion.', longDesc: 'Our Salted Shankarpali is made using a generations-old rolling and folding technique. By hand-kneading premium flour with pure ghee, we achieve distinct crisp layers that shatter beautifully with every single bite.', ingredients: 'Premium Flour, Pure Ghee, Organic Rock Salt, Cold-pressed Oil.', allergic: 'Contains gluten and dairy.', makingVideoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4', images: ['https://images.unsplash.com/photo-1601050641296-611182e94763?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&w=800&q=80'], purityBadges: ['Pure Ghee', 'No Maida-Bleach'], specs: { origin: 'Home-kitchen, Mumbai', shelfLife: '30 Days', prepMethod: 'Hand-rolled & Fried' }, sizes: { '250g': 150, '500g': 280 } },
-            'prod-2': { id: 'prod-2', category: 'Bold & Tangy', title: 'Tangy Shankarpali', tagline: 'Old-school crunch combined with an exciting chatpata spice dust.', longDesc: 'Dusted immediately after escaping the oil with our proprietary in-house masala blend, this delivers a wave of sweet and sour flavor followed by a mild spicy kick. Zero artificial color enhancers.', ingredients: 'Premium Flour, Ghee, Amchur, Black Salt, Cayenne, Cold-Pressed Oil.', allergic: 'Contains gluten and dairy.', makingVideoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4', images: ['https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1601050641296-611182e94763?auto=format&fit=crop&w=800&q=80'], purityBadges: ['Handground Spices', 'Zero Preservatives'], specs: { origin: 'Home-kitchen, Mumbai', shelfLife: '30 Days', prepMethod: 'Masala-tumbled' }, sizes: { '250g': 165, '500g': 310 } },
-            'prod-3': { id: 'prod-3', category: 'Golden Poha', title: 'Special Chivda', tagline: 'Crunchy golden flakes enriched with hand-selected premium dry fruits.', longDesc: 'Prepared using double-filtered oil, our Special Chivda balances roasted poha with standard curry leaf seasoning. Roasted peanuts and premium cashew halves lend a sweet nuttiness to every spoonful.', ingredients: 'Flat-roasted Rice, Peanuts, Cashews, Green Chillies, Curry Leaves, Mustard Seeds, Rock Salt.', allergic: 'Contains peanuts/nuts.', makingVideoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4', images: ['https://images.unsplash.com/photo-1589119634735-12cb0d210995?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1596797038530-2c395c01f1e1?auto=format&fit=crop&w=800&q=80'], purityBadges: ['High-Protein Nuts', 'Cold-Pressed Oils'], specs: { origin: 'Home-kitchen, Mumbai', shelfLife: '45 Days', prepMethod: 'Gentle pan-roast' }, sizes: { '250g': 180, '500g': 340 } }
+            'prod-1': { 
+                id: 'prod-1', category: 'Classic Savory', title: 'Salted Shankarpali', tagline: 'The perfect golden melt-in-mouth tea companion.', longDesc: 'Our Salted Shankarpali is made using a generations-old rolling and folding technique. By hand-kneading premium flour with pure ghee, we achieve distinct crisp layers that shatter beautifully with every single bite.', ingredients: 'Premium Flour, Pure Ghee, Organic Rock Salt, Cold-pressed Oil.', allergic: 'Contains gluten and dairy.', makingVideoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4', images: ['salted.jpg', 'salted.jpg'], purityBadges: ['Pure Ghee', 'No Maida-Bleach'], specs: { origin: 'Home-kitchen, Mumbai', shelfLife: '30 Days', prepMethod: 'Hand-rolled & Fried' }, 
+                sizes: { 'Pocket pack(100gm)': 65, 'Regular pack(200gm)': 120, 'Large Pack(400gm)': 230 } 
+            },
+            'prod-2': { 
+                id: 'prod-2', category: 'Bold & Tangy', title: 'Tangy Shankarpali', tagline: 'Old-school crunch combined with an exciting chatpata spice dust.', longDesc: 'Dusted immediately after escaping the oil with our proprietary in-house masala blend, this delivers a wave of sweet and sour flavor followed by a mild spicy kick. Zero artificial color enhancers.', ingredients: 'Premium Flour, Ghee, Amchur, Black Salt, Cayenne, Cold-Pressed Oil.', allergic: 'Contains gluten and dairy.', makingVideoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4', images: ['tangy.jpg', 'tangy.jpg'], purityBadges: ['Handground Spices', 'Zero Preservatives'], specs: { origin: 'Home-kitchen, Mumbai', shelfLife: '30 Days', prepMethod: 'Masala-tumbled' }, 
+                sizes: { 'Pocket pack(100gm)': 70, 'Regular pack(200gm)': 130, 'Large Pack(400gm)': 250 } 
+            },
+            'prod-3': { 
+                id: 'prod-3', category: 'Golden Poha', title: 'Special Chivda', tagline: 'Crunchy golden flakes enriched with hand-selected premium dry fruits.', longDesc: 'Prepared using double-filtered oil, our Special Chivda balances roasted poha with standard curry leaf seasoning. Roasted peanuts and premium cashew halves lend a sweet nuttiness to every spoonful.', ingredients: 'Flat-roasted Rice, Peanuts, Cashews, Green Chillies, Curry Leaves, Mustard Seeds, Rock Salt.', allergic: 'Contains peanuts/nuts.', makingVideoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4', images: ['chivda.jpg', 'chivda.jpg'], purityBadges: ['High-Protein Nuts', 'Cold-Pressed Oils'], specs: { origin: 'Home-kitchen, Mumbai', shelfLife: '45 Days', prepMethod: 'Gentle pan-roast' }, 
+                sizes: { 'Pocket pack(100gm)': 80, 'Regular pack(200gm)': 150, 'Large Pack(400gm)': 280 } 
+            }
         };
 
         let cart = [];
+        window.onload = () => { renderCart(); };
 
         // Navigation Controller
         function showView(viewId) {
@@ -601,7 +618,7 @@
 
         // Handle weight selection natively in Store Cards
         function selectWeight(event, productId, weight, price) {
-            if(event) event.stopPropagation(); // VERY IMPORTANT: Stops the card click event from firing
+            if(event) event.stopPropagation();
 
             productStates[productId].weight = weight;
             productStates[productId].price = price;
@@ -624,7 +641,7 @@
             let sizeButtonsHtml = '';
             Object.keys(data.sizes).forEach(size => {
                 const isActive = state.weight === size ? 'active' : '';
-                sizeButtonsHtml += `<button class="weight-pill ${isActive}" onclick="updateProfilePrice(event, '${productId}', '${size}', ${data.sizes[size]})">${size}</button>`;
+                sizeButtonsHtml += `<button class="weight-pill ${isActive}" data-size="${size}" onclick="updateProfilePrice(event, '${productId}', '${size}', ${data.sizes[size]})">${size}</button>`;
             });
 
             let badgesHtml = '';
@@ -685,7 +702,6 @@
             productStates[productId].weight = size;
             productStates[productId].price = price;
 
-            // Highlight pill in profile view
             if(event) {
                 const detailContainer = document.getElementById('profile-container');
                 detailContainer.querySelectorAll('.weight-pill').forEach(btn => btn.classList.remove('active'));
@@ -693,12 +709,12 @@
             }
             document.getElementById('profile-price').innerText = `₹${price}`;
 
-            // SYNC the store card so it matches when the user goes back
+            // Sync with Store Card natively using dataset attribute
             const card = document.getElementById(`card-${productId}`);
             if(card) {
                 card.querySelectorAll('.weight-pill').forEach(btn => {
                     btn.classList.remove('active');
-                    if(btn.innerText === size) btn.classList.add('active');
+                    if(btn.getAttribute('data-size') === size) btn.classList.add('active');
                 });
                 document.getElementById(`price-${productId}`).innerText = `₹${price}`;
             }
@@ -727,7 +743,7 @@
             }
         }
 
-        // CART LOGIC
+        // PERFECTLY FIXED CART LOGIC
         function toggleCart(open) {
             document.getElementById('cart-overlay').classList.toggle('open', open);
             document.getElementById('cart-drawer').classList.toggle('open', open);
@@ -736,16 +752,14 @@
         function triggerAdd(productId, productName) {
             const state = productStates[productId];
             
-            // Add to data structure
             const existing = cart.find(i => i.name === productName && i.weight === state.weight);
             if (existing) existing.quantity++;
             else cart.push({ name: productName, weight: state.weight, price: state.price, quantity: 1 });
             
             renderCart();
 
-            // Show Toast
             const toast = document.getElementById('toast-notif');
-            document.getElementById('toast-message').innerText = `${productName} (${state.weight}) added`;
+            document.getElementById('toast-message').innerText = `${productName} added`;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
@@ -761,7 +775,7 @@
             const badge = document.getElementById('cart-badge');
             
             if (cart.length === 0) {
-                wrapper.innerHTML = `<p style="text-align:center; margin-top:2rem; color:var(--text-muted)">Your bag is empty.</p>`;
+                wrapper.innerHTML = `<p style="text-align:center; margin-top:2rem; color:var(--text-muted)">Your bag is currently empty.</p>`;
                 badge.style.display = 'none';
                 document.getElementById('cart-total').innerText = '₹0';
                 return;
@@ -779,7 +793,7 @@
                         </div>
                         <div class="qty-controls">
                             <i class="fas fa-minus" style="font-size:0.8rem; cursor:pointer;" onclick="changeQty(${i}, -1)"></i>
-                            <span style="font-size:0.9rem; font-weight:bold;">${item.quantity}</span>
+                            <span style="font-size:0.9rem; font-weight:bold; margin: 0 5px;">${item.quantity}</span>
                             <i class="fas fa-plus" style="font-size:0.8rem; cursor:pointer;" onclick="changeQty(${i}, 1)"></i>
                         </div>
                     </div>
@@ -793,17 +807,17 @@
 
         // WHATSAPP CHECKOUT
         function checkoutWhatsApp() {
-            if (cart.length === 0) return alert("Your bag is empty!");
+            if (cart.length === 0) return alert("Your bag is empty! Please add some snacks to purchase.");
+            
             let msg = `*Namaste Swadam Foods!* \nI would like to order:\n\n`;
             let total = 0;
             cart.forEach((item, i) => {
                 total += item.price * item.quantity;
                 msg += `${i+1}. *${item.name}* (${item.weight}) — ${item.quantity}x = ₹${item.price * item.quantity}\n`;
             });
-            msg += `\n*Total: ₹${total}*\nPlease share payment details!`;
+            msg += `\n*Grand Total: ₹${total}*\nPlease share payment details!`;
             
-            // Replace with your business phone number
-            window.open(`https://wa.me/919999999999?text=${encodeURIComponent(msg)}`, '_blank');
+            window.open(`https://wa.me/919356614958?text=${encodeURIComponent(msg)}`, '_blank');
         }
     </script>
 </body>
